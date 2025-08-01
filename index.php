@@ -60,22 +60,35 @@
       return day !== 0 && day !== 6; // ไม่ใช่เสาร์-อาทิตย์
     }
 
-    function countDays() {
-      const start = parseThaiDate(document.getElementById("start_date_1").value);
-      const end = parseThaiDate(document.getElementById("end_date_1").value);
-      const workOnly = document.getElementById("workdays_only_1").checked;
-      if (!start || !end || end < start) {
-        document.getElementById("result_1").innerText = "กรุณากรอกวันที่ให้ถูกต้อง";
-        return;
-      }
-      let count = 0;
-      let temp = new Date(start);
-      while (temp <= end) {
-        if (!workOnly || isWorkday(temp)) count++;
-        temp.setDate(temp.getDate() + 1);
-      }
-      document.getElementById("result_1").innerText = `รวม ${count} วัน` + (workOnly ? " (วันทำการ)" : "");
-    }
+function countDays() {
+  const start = parseThaiDate(document.getElementById("start_date_1").value);
+  const end = parseThaiDate(document.getElementById("end_date_1").value);
+  const workOnly = document.getElementById("workdays_only_1").checked;
+
+  if (!start || !end || end < start) {
+    document.getElementById("result_1").innerText = "กรุณากรอกวันที่ให้ถูกต้อง";
+    return;
+  }
+
+  let count = 0;
+  let temp = new Date(start);
+
+  while (temp <= end) {
+    if (!workOnly || isWorkday(temp)) count++;
+    temp.setDate(temp.getDate() + 1);
+  }
+
+  // แปลงจำนวนวันเป็น ปี เดือน วัน โดยใช้ค่าประมาณ
+  const years = Math.floor(count / 365.25);
+  const remainingDaysAfterYear = count % 365.25;
+
+  const months = Math.floor(remainingDaysAfterYear / 30.44);
+  const days = Math.round(remainingDaysAfterYear % 30.44);
+
+  const summary = `รวม ${count} วัน${workOnly ? " (วันทำการ)" : ""} นับเป็น ${years} ปี ${months} เดือน ${days} วัน`;
+
+  document.getElementById("result_1").innerText = summary;
+}
 
     function calculateDate() {
       const start = parseThaiDate(document.getElementById("start_date_2").value);
